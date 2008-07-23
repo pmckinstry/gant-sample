@@ -1,0 +1,50 @@
+includeTargets << gant.targets.Clean
+cleanPattern << [ '**/*~' ,  '**/*.bak' ]
+cleanDirectory << 'build'
+
+Ant.taskdef(name : 'groovyc',
+            classname : 'org.codehaus.groovy.ant.Groovyc')
+
+target ( init : 'create dir structure if necessary.' ) { 
+  echo ( message : 'init' )
+  Ant.property(file: 'build.properties')
+  echo ( message : '${src.java.dir}')
+  new File("build").mkdir()
+  new File("build/classes").mkdir()
+  new File("build/dist").mkdir()
+}
+
+target ( stuff : 'a target to do some stuff.' ) {
+  println ( 'stuff' )
+  depends ( clean )
+  echo ( message : 'a default message from ant.' )
+}
+
+target ( compile : 'compile java src' ) { 
+  echo ( message : 'compile' )
+  depends ( init )
+  Ant.javac ( 
+	destdir: "build/classes",
+	srcdir: "src/java",
+	classpath: "build/classes",
+	debug: true,
+	source: '1.5',
+	target: '1.5',
+	failonerror: 'yes'
+  )
+  groovyc ( 
+	destdir: "build/classes",
+	srcdir: "src/groovy"
+  )
+}
+
+target ( jar : 'create jar' ) { 
+  echo ( message : 'jar' )
+  depends ( compile )
+  Ant.jar(
+    destfile: "build/dist/output.jar", 
+	basedir: "build/classes"
+  )
+}
+
+setDefaultTarget ( stuff )
