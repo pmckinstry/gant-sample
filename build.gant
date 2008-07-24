@@ -5,6 +5,8 @@ cleanDirectory << 'build'
 Ant.taskdef(name : 'groovyc',
             classname : 'org.codehaus.groovy.ant.Groovyc')
 
+def projectname = "gant-sample"
+
 target ( init : 'create dir structure if necessary.' ) { 
   echo ( message : 'init' )
   Ant.property(file: 'build.properties')
@@ -12,12 +14,6 @@ target ( init : 'create dir structure if necessary.' ) {
   new File("build").mkdir()
   new File("build/classes").mkdir()
   new File("build/dist").mkdir()
-}
-
-target ( stuff : 'a target to do some stuff.' ) {
-  println ( 'stuff' )
-  depends ( clean )
-  echo ( message : 'a default message from ant.' )
 }
 
 target ( compile : 'compile java src' ) { 
@@ -38,13 +34,13 @@ target ( compile : 'compile java src' ) {
   )
 }
 
-target ( jar : 'create jar' ) { 
-  echo ( message : 'jar' )
+target ( dist : 'create jar' ) { 
+  echo ( message : 'dist' )
   depends ( compile )
   Ant.jar(
-    destfile: "build/dist/output.jar", 
+    destfile: "build/dist/${projectname}.jar", 
 	basedir: "build/classes"
   )
 }
 
-setDefaultTarget ( stuff )
+setDefaultTarget ( dist )
